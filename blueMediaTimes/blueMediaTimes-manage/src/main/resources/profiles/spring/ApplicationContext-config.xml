@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-autowire="byName">
+
+    <bean id="jsonObjectMapperFactory" class="com.thirdlibext.jacksonext.JsonObjectMapperFactory"/>
+    <!-- 用来转换JsonNode到对象的Mapper -->
+    <bean id="jsonObjMapper" factory-bean="jsonObjectMapperFactory" factory-method="getMapper"/>
+
+    <!-- freemarker config -->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/freemarker/"/>
+
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="xml_escape" value-ref="fmXmlEscape"/>
+            </map>
+        </property>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="defaultEncoding">UTF-8</prop>
+                <prop key="number_format">#</prop>
+                <prop key="auto_import">page.ftl as page,li.ftl as li</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>
+
+    <!-- Application Message Bundle -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+
+        <!--默认cacheSeconds是-1，代表一直缓存。0适用于开发阶段，会每次检查资源文件的最后修改时间-->
+        <property name="cacheSeconds" value="0"/>
+        <property name="defaultEncoding" value="utf-8"/>
+        <property name="fallbackToSystemLocale" value="false" /> 
+
+    </bean>
+
+</beans>

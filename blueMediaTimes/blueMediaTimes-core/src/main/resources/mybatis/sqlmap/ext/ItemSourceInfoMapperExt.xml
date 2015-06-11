@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.work.core.model.dao.impl.ItemSourceInfoDaoImpl">
+  <resultMap id="itemModelSourceInfo" type="com.work.core.model.bvo.ItemModelSourceInfo">
+
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="model_id" jdbcType="INTEGER" property="modelId" />
+    <result column="source_id" jdbcType="INTEGER" property="sourceId" />
+    <result column="movie_name" jdbcType="VARCHAR" property="movieName" />
+    <result column="img_path" jdbcType="VARCHAR" property="imgPath" />
+    <result column="source_name" jdbcType="VARCHAR" property="sourceName" />
+    <result column="tmp_img_path" jdbcType="VARCHAR" property="tmpImgPath" />
+    <result column="simple_describe" jdbcType="VARCHAR" property="simpleDescribe" />
+  </resultMap>
+
+  <select id="getItemSource" parameterType="map" resultMap="itemModelSourceInfo">
+    SELECT msi.id as id,msi.source_name as sourceName, isi.`model_id` as model_id,msi.source_id as sourceId,msi.movie_name,
+           msi.`img_path` as img_path,msi.`img_path` as tmp_img_path, msi.`simple_describe` as simple_describe
+      FROM item_source_info isi
+      JOIN model_source_info msi ON
+           isi.model_id = msi.model_id
+    WHERE isi.`item_id` = #{itemId} and isi.model_id = #{modelId};
+  </select>
+</mapper>

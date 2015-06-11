@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		">
+
+    <bean id="myHandlerExceptionResolver" class="com.work.controller.MyHandlerExceptionResolver"/>
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <!-- Configures the @Controller programming model -->
+    <mvc:annotation-driven/>
+
+    <!-- Scans the classpath of this application for @Components to deploy as beans -->
+    <!-- 多个包名用逗号隔开, 但不能有空格 -->
+    <context:component-scan base-package="com.work.controller"/>
+
+    <!-- Configures Handler Interceptors -->
+    <mvc:interceptors>
+        <!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
+        <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="locale"/>
+        </bean>
+        <bean id="securityIntercepter" class="com.work.security.PermissionHandler">
+            <property name="relogTarget" value="/admin/login"/>
+            <property name="deniedTarget" value="/admin/denied"/>
+            <property name="excludeURL">
+                <value>/login,/relogin,/main</value>
+            </property>
+        </bean>
+
+        <!--<bean id="securityIntercepter" class="com.tuan800.ad.interceptor.SecurityIntercepter">-->
+        <!--<property name="debug" value="${env.debug}" />-->
+        <!--</bean>-->
+    </mvc:interceptors>
+
+    <!-- Saves a locale change using a cookie -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="defaultLocale">
+            <value>zh</value>
+        </property>
+        <property name="cookieMaxAge" value="100000"/>
+    </bean>
+
+
+    <!-- order值越小, 优先级越高 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
+
+
+    <!--<bean id="controllerClassNameHandlerMapping" class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">-->
+    <!--<property name="order" value="2"/>-->
+    <!--<property name="caseSensitive" value="true"/>-->
+    <!--<property name="basePackage" value="com.tuan800.googleAd.controller"/>-->
+    <!--</bean>-->
+    <bean id="jacksonHttpMessageConverter"
+          class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <property name="objectMapper" ref="jsonObjMapper"/>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+                <!--<bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter"/>-->
+                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+                <!--<bean class="org.springframework.http.converter.BufferedImageHttpMessageConverter"/>-->
+            </list>
+        </property>
+
+        <!-- 使用根据项目来的数据类型绑定设置 -->
+        <property name="webBindingInitializer">
+            <bean class="com.work.security.SimpleWebBindingInitializer"/>
+        </property>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <property name="maxUploadSize" value="10240000"/>
+    </bean>
+
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <!-- 遇到MaxUploadSizeExceededException异常时，自动跳转到/jsp/fileError.jsp页面 -->
+                <prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">file_error.json</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--
+    View resolvers can also be configured with ResourceBundles or XML files. If you need
+    different view resolving based on Locale, you have to use the resource bundle resolver.
+    -->
+    <bean id="freeMarkerViewResolver"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <!-- 
+        <property name="suffix" value=".ftl"/>
+         -->
+        <property name="suffix" value=".ftl"/>
+        <property name="exposeRequestAttributes" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="allowRequestOverride" value="true"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="order" value="2"/>
+        <property name="requestContextAttribute" value="rc"/>
+
+    </bean>
+
+    <!--<bean id="textHtmlMediaType" class="org.springframework.http.MediaType">-->
+    <!--<constructor-arg type="java.lang.String" value="text/html"/>-->
+    <!--</bean>-->
+
+    <!-- 根据客户端的不同的请求决定不同的view进行响应, 如 /blog/1.json /blog/1.xml -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1"/>
+        <!-- 设置为true以忽略对Accept Header的支持-->
+        <property name="ignoreAcceptHeader" value="true"/>
+
+        <!-- 在没有扩展名时即: "/user/1" 时的默认展现形式 -->
+        <property name="defaultContentType" value="text/html"/>
+        <!--<property name="defaultContentType" value="text/html"/>        -->
+        <!--<property name="defaultContentType" ref="textHtmlMediaType" />-->
+
+        <!-- 扩展名至mimeType的映射,即 /user.json => application/json -->
+        <property name="mediaTypes">
+            <map>
+                <entry key="wml" value="text/vnd.wap.wml;charset=UTF-8"/>
+                <entry key="html" value="text/html"/>
+                <entry key="json" value="application/json"/>
+                <!--<entry key="xml" value="application/xml"/>-->
+            </map>
+        </property>
+
+        <!-- 用于开启 /userinfo/123?format=json 的支持 -->
+        <property name="favorParameter" value="false"/>
+
+        <property name="viewResolvers">
+            <list>
+                <ref bean="freeMarkerViewResolver"/>
+            </list>
+        </property>
+
+
+        <property name="defaultViews">
+            <list>
+                <!-- for application/json -->
+                <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+
+                <!-- for application/xml -->
+                <!--<bean id="xmlView" class="org.springframework.web.servlet.view.xml.MarshallingView">-->
+                <!--<property name="marshaller">-->
+                <!--<bean class="org.springframework.oxm.xstream.XStreamMarshaller">-->
+                <!--<property name="autodetectAnnotations" value="true"/>-->
+                <!--</bean>-->
+                <!--</property>-->
+                <!--<property name="modelKey" value="xmlKey"/>-->
+                <!--</bean>-->
+            </list>
+        </property>
+    </bean>
+
+</beans>

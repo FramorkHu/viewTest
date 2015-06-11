@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-autowire="byName">
+
+       <bean id="userInfoService" class="com.work.service.impl.UserInfoServiceImpl">
+              <property name="userInfoDao" ref="userInfoDao"/>
+       </bean>
+
+       <bean id="itemSourceInfoService" class="com.work.service.impl.ItemSourceInfoServiceImpl">
+              <property name="itemSourceInfoDao" ref="itemSourceInfoDao"/>
+       </bean>
+
+       <bean id="movieSourceDetailInfoService" class="com.work.service.impl.MovieSourceDetailInfoServiceImpl">
+              <property name="movieSourceDetailInfoDao" ref="movieSourceDetailInfoDao"/>
+       </bean>
+
+       <bean id="modelSourceInfoService" class="com.work.service.impl.ModelSourceInfoServiceImpl">
+              <property name="modelSourceInfoDao" ref="modelSourceInfoDao"/>
+       </bean>
+
+       <bean id="movieImgInfoService" class="com.work.service.impl.MovieImgInfoServiceImpl">
+              <property name="movieImgInfoDao" ref="movieImgInfoDao"/>
+       </bean>
+
+       <bean id="movieClassifyService" class="com.work.service.impl.MovieClassifyServiceImpl">
+              <property name="movieClassifyDao" ref="movieClassifyDao"/>
+       </bean>
+
+       <bean id="movieSourceClassifyInfoService" class="com.work.service.impl.MovieSourceClassifyInfoServiceImpl">
+              <property name="movieSourceClassifyInfoDao" ref="movieSourceClassifyInfoDao"/>
+       </bean>
+
+</beans>

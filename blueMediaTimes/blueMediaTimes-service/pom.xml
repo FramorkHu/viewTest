@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <groupId>com.blueMediaTimes</groupId>
+    <artifactId>blueMediaTimes-service</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>blueMediaTimes-service</name>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <appname>blueMediaTimes-service</appname>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.blueMediaTimes</groupId>
+            <artifactId>blueMediaTimes-core</artifactId>
+            <!-- Latest 2.3.x (not 2.4.x), at least 2.3.16 -->
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
